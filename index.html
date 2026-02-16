@@ -6,121 +6,315 @@
     <title>Ocean Palace - App Oficial</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <link rel="icon" href="https://www.oceanpalace.com.br/wp-content/uploads/2022/05/cropped-favicon-32x32.png">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
+        
         :root { --ocean-blue: #003366; --ocean-gold: #c5a059; --ocean-light: #f8fafc; }
-        body { font-family: 'Poppins', sans-serif; background-color: var(--ocean-light); margin: 0; overflow-x: hidden; }
+        body { font-family: 'Poppins', sans-serif; background-color: var(--ocean-light); -webkit-tap-highlight-color: transparent; }
+
         .bg-ocean { background: linear-gradient(135deg, #003366 0%, #001f3f 100%); }
-        .screen { display: none; min-height: 100vh; padding-bottom: 100px; }
-        .active { display: block; animation: fadeIn 0.3s ease; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        .tab-bar { position: fixed; bottom: 0; w-full; background: white; height: 70px; display: flex; justify-content: space-around; align-items: center; box-shadow: 0 -5px 15px rgba(0,0,0,0.05); z-index: 1000; width: 100%; }
-        .nav-icon { color: #94a3b8; font-size: 1.2rem; display: flex; flex-direction: column; align-items: center; border: none; background: none; }
-        .nav-active { color: var(--ocean-gold); }
-        .profile-img { width: 80px; height: 80px; object-fit: cover; border-radius: 20px; border: 2px solid var(--ocean-gold); }
+        .text-gold { color: var(--ocean-gold); }
+        .bg-gold { background-color: var(--ocean-gold); }
+
+        .screen { display: none; min-height: 100vh; animation: fadeIn 0.4s ease; padding-bottom: 120px; }
+        .active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .tab-bar { box-shadow: 0 -10px 30px rgba(0,0,0,0.08); border-radius: 35px 35px 0 0; z-index: 100; }
+        .nav-icon { color: #94a3b8; transition: all 0.3s; display: flex; flex-direction: column; align-items: center; font-size: 1.2rem; }
+        .nav-active { color: var(--ocean-gold); transform: translateY(-5px); }
+        .btn-plus { transform: translateY(-30px); border: 4px solid white; box-shadow: 0 12px 20px rgba(197, 160, 89, 0.4); }
+
+        .profile-img { width: 100px; height: 100px; object-fit: cover; border-radius: 30px; border: 3px solid var(--ocean-gold); }
+        .day-btn { padding: 10px 20px; border-radius: 18px; background: white; font-size: 12px; font-weight: bold; border: 1px solid #e2e8f0; white-space: nowrap; }
+        .active-day { background: var(--ocean-gold) !important; color: white !important; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+
+        /* Estilo para os cards de notícias */
+        .news-card { min-width: 280px; transition: transform 0.2s; }
+        .news-card:active { transform: scale(0.95); }
     </style>
 </head>
 <body>
 
-    <div id="screen-login" class="screen active flex items-center justify-center p-6">
-        <div class="w-full max-w-sm bg-white rounded-[30px] shadow-xl p-8 text-center border-t-4 border-[#c5a059]">
-            <img src="https://www.oceanpalace.com.br/wp-content/uploads/2022/05/logo-ocean-palace.png" class="mx-auto w-32 mb-6">
-            <div class="space-y-4">
-                <input type="text" id="userInput" placeholder="CPF" class="w-full p-4 bg-gray-50 rounded-xl outline-none border border-gray-100">
-                <input type="password" id="passInput" placeholder="Matrícula" class="w-full p-4 bg-gray-50 rounded-xl outline-none border border-gray-100">
-                <button onclick="login()" class="w-full bg-ocean text-white font-bold py-4 rounded-xl shadow-lg">ACESSAR</button>
+    <div id="screen-login" class="screen active flex items-center justify-center p-6 bg-slate-100">
+        <div class="w-full max-w-sm bg-white rounded-[40px] shadow-2xl p-10 border-t-8 border-[#c5a059] text-center">
+            <i class="fa-solid fa-hotel text-4xl text-blue-900 mb-2"></i>
+            <h1 class="text-2xl font-bold text-blue-900 uppercase tracking-tighter">Ocean Palace</h1>
+            <p class="text-gray-400 text-[10px] tracking-[3px] mb-8">PORTAL DO COLABORADOR</p>
+            <div class="space-y-4 text-left">
+                <input type="text" id="userInput" oninput="mascaraCPF(this)" placeholder="CPF (708...)" class="w-full p-4 bg-gray-50 border-2 border-gray-100 rounded-2xl outline-none focus:border-gold transition-all">
+                <input type="password" id="passInput" placeholder="Matrícula (6664)" class="w-full p-4 bg-gray-50 border-2 border-gray-100 rounded-2xl outline-none focus:border-gold transition-all">
+                <button onclick="login()" class="w-full bg-ocean text-white font-bold py-4 rounded-2xl shadow-lg mt-4 active:scale-95 transition-all">ACESSAR</button>
             </div>
         </div>
     </div>
 
     <div id="screen-home" class="screen">
-        <header class="bg-ocean p-8 rounded-b-[40px] text-white flex justify-between items-center">
-            <div>
-                <p class="text-[10px] text-gold font-bold uppercase">Bem-vindo</p>
-                <h2 id="displayNome" class="text-xl font-bold">---</h2>
-            </div>
-            <img id="home-avatar" src="" class="w-12 h-12 rounded-xl border border-gold object-cover" onclick="changeScreen('screen-perfil')">
-        </header>
-        <main class="p-6 space-y-4 -mt-6">
-            <div onclick="changeScreen('screen-horas')" class="bg-white p-6 rounded-3xl shadow-md border-l-4 border-gold">
-                <p class="text-[10px] text-gray-400 font-bold uppercase">Banco de Horas</p>
-                <h3 id="displayHoras" class="text-3xl font-black text-slate-800">---</h3>
-            </div>
-            <div class="grid grid-cols-2 gap-4">
-                <div onclick="changeScreen('screen-cardapio')" class="bg-white p-5 rounded-3xl shadow-sm text-center">
-                    <i class="fa-solid fa-utensils text-orange-400 mb-2"></i>
-                    <p class="text-xs font-bold">Cardápio</p>
+        <header class="bg-ocean p-10 rounded-b-[50px] text-white shadow-2xl relative">
+            <div class="flex justify-between items-center">
+                <div onclick="changeScreen('screen-perfil')">
+                    <p class="text-xs text-gold font-bold uppercase tracking-widest">Olá,</p>
+                    <h2 id="displayNome" class="text-2xl font-bold">---</h2>
+                    <span id="displaySetor" class="bg-white/10 px-4 py-1.5 rounded-full text-[10px] mt-3 inline-block">---</span>
                 </div>
-                <div onclick="changeScreen('screen-perfil')" class="bg-white p-5 rounded-3xl shadow-sm text-center">
-                    <i class="fa-solid fa-user-gear text-blue-400 mb-2"></i>
-                    <p class="text-xs font-bold">Configurar</p>
+                <div onclick="changeScreen('screen-perfil')" class="w-16 h-16 rounded-2xl border-2 border-gold overflow-hidden bg-white/20">
+                    <img id="home-avatar" src="https://ui-avatars.com/api/?name=User&background=c5a059&color=fff" class="w-full h-full object-cover">
+                </div>
+            </div>
+        </header>
+
+        <main class="p-6 -mt-10 space-y-6">
+            <div onclick="changeScreen('screen-horas')" class="bg-white p-7 rounded-[35px] shadow-xl border-l-8 border-gold flex justify-between items-center active:scale-95 transition-all">
+                <div>
+                    <p class="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Saldo de Horas</p>
+                    <h3 id="displayHoras" class="text-4xl font-black">---</h3>
+                </div>
+                <div class="w-12 h-12 bg-gold/10 rounded-full flex items-center justify-center text-gold">
+                    <i class="fa-solid fa-clock-rotate-left text-xl"></i>
+                </div>
+            </div>
+
+            <div>
+                <div class="flex justify-between items-center mb-3 px-2">
+                    <h4 class="text-sm font-bold text-gray-800 uppercase tracking-tighter">Comunicados</h4>
+                    <span class="text-[10px] text-gold font-bold">VER TUDO</span>
+                </div>
+                <div class="flex space-x-4 overflow-x-auto no-scrollbar pb-2">
+                    <div class="news-card bg-white p-4 rounded-[30px] shadow-md border border-gray-100 flex items-center space-x-4">
+                        <div class="w-16 h-16 bg-blue-100 rounded-2xl flex items-center justify-center text-blue-600 text-2xl">
+                            <i class="fa-solid fa-bullhorn"></i>
+                        </div>
+                        <div>
+                            <p class="text-[10px] text-blue-600 font-bold uppercase">Aviso Geral</p>
+                            <h5 class="text-xs font-bold text-gray-800">Reunião de Alinhamento amanhã às 15h.</h5>
+                        </div>
+                    </div>
+                    <div class="news-card bg-white p-4 rounded-[30px] shadow-md border border-gray-100 flex items-center space-x-4">
+                        <div class="w-16 h-16 bg-pink-100 rounded-2xl flex items-center justify-center text-pink-600 text-2xl">
+                            <i class="fa-solid fa-cake-candles"></i>
+                        </div>
+                        <div>
+                            <p class="text-[10px] text-pink-600 font-bold uppercase">Aniversário</p>
+                            <h5 class="text-xs font-bold text-gray-800">Parabéns aos colaboradores de Fevereiro!</h5>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+                <div onclick="changeScreen('screen-cardapio')" class="bg-white p-6 rounded-[30px] shadow-md border-b-4 border-orange-400 active:scale-95 transition-all">
+                    <i class="fa-solid fa-utensils text-orange-500 text-xl mb-2"></i>
+                    <h4 class="text-xs font-bold text-gray-700">Ver Cardápio</h4>
+                </div>
+                <div onclick="changeScreen('screen-contracheque')" class="bg-white p-6 rounded-[30px] shadow-md border-b-4 border-blue-400 active:scale-95 transition-all">
+                    <i class="fa-solid fa-wallet text-blue-500 text-xl mb-2"></i>
+                    <h4 class="text-xs font-bold text-gray-700">Finanças</h4>
                 </div>
             </div>
         </main>
     </div>
 
     <div id="screen-perfil" class="screen">
-        <div class="bg-ocean p-6 text-white flex items-center">
-            <button onclick="changeScreen('screen-home')" class="mr-4"><i class="fa-solid fa-arrow-left"></i></button>
-            <h2 class="font-bold uppercase text-sm">Meu Perfil</h2>
+        <div class="bg-ocean p-6 text-white flex items-center rounded-b-3xl">
+            <button onclick="changeScreen('screen-home')" class="mr-4"><i class="fa-solid fa-chevron-left"></i></button>
+            <h2 class="font-bold uppercase text-sm tracking-widest">Configurações</h2>
         </div>
         <div class="p-8 text-center">
             <div class="relative inline-block mb-6">
-                <img id="perfil-avatar" src="" class="profile-img">
-                <input type="file" id="inputFoto" class="hidden" onchange="updatePhoto(this)">
-                <button onclick="document.getElementById('inputFoto').click()" class="absolute -bottom-2 -right-2 bg-gold text-white w-8 h-8 rounded-full border-2 border-white"><i class="fa-solid fa-camera text-xs"></i></button>
+                <img id="perfil-avatar" src="https://ui-avatars.com/api/?name=User&background=c5a059&color=fff" class="profile-img shadow-2xl">
+                <button onclick="document.getElementById('inputFotoPerfil').click()" class="absolute bottom-0 right-0 bg-gold text-white w-10 h-10 rounded-full border-4 border-white flex items-center justify-center shadow-lg active:scale-90 transition-all">
+                    <i class="fa-solid fa-camera text-xs"></i>
+                </button>
+                <input type="file" id="inputFotoPerfil" accept="image/*" class="hidden" onchange="alterarFoto(this)">
             </div>
-            <div class="text-left space-y-4">
-                <input type="text" id="editNome" placeholder="Nome" class="w-full p-4 bg-white border rounded-xl">
-                <button onclick="saveProfile()" class="w-full bg-ocean text-white font-bold py-4 rounded-xl">SALVAR</button>
+            
+            <div class="space-y-4 text-left">
+                <div>
+                    <label class="text-[10px] font-bold text-gray-400 uppercase ml-2 tracking-widest">Nome Completo</label>
+                    <input type="text" id="editNome" class="w-full p-4 bg-white border-2 border-gray-100 rounded-2xl outline-none focus:border-gold transition-all">
+                </div>
+                <div>
+                    <label class="text-[10px] font-bold text-gray-400 uppercase ml-2 tracking-widest">Setor / Função</label>
+                    <input type="text" id="editSetor" class="w-full p-4 bg-white border-2 border-gray-100 rounded-2xl outline-none focus:border-gold transition-all">
+                </div>
+                <button onclick="salvarPerfil()" class="w-full bg-ocean text-white font-bold py-4 rounded-2xl shadow-lg transition-all active:scale-95">SALVAR ALTERAÇÕES</button>
+                <button onclick="location.reload()" class="w-full text-red-500 font-bold py-2 text-sm mt-4">DESLOGAR DO SISTEMA</button>
             </div>
         </div>
     </div>
 
-    <nav id="navbar" class="tab-bar hidden">
-        <button onclick="changeScreen('screen-home')" class="nav-icon nav-active"><i class="fa-solid fa-house"></i></button>
-        <button onclick="changeScreen('screen-perfil')" class="nav-icon"><i class="fa-solid fa-user"></i></button>
+    <div id="screen-cardapio" class="screen">
+        <div class="bg-ocean p-6 text-white flex items-center rounded-b-3xl">
+            <button onclick="changeScreen('screen-home')" class="mr-4"><i class="fa-solid fa-chevron-left"></i></button>
+            <h2 class="font-bold uppercase text-sm tracking-widest">Refeitório</h2>
+        </div>
+        <div class="p-4 flex space-x-2 overflow-x-auto no-scrollbar" id="btn-container-dias"></div>
+        <div id="conteudo-cardapio" class="p-6 space-y-6"></div>
+    </div>
+
+    <div id="screen-solicitar" class="screen">
+        <div class="bg-ocean p-6 text-white flex items-center rounded-b-3xl">
+            <button onclick="changeScreen('screen-home')" class="mr-4"><i class="fa-solid fa-chevron-left"></i></button>
+            <h2 class="font-bold uppercase text-sm tracking-widest">Atendimento RH</h2>
+        </div>
+        <div class="p-6 space-y-4">
+            <div class="bg-white p-8 rounded-[40px] border-2 border-dashed border-gray-200 text-center cursor-pointer active:bg-gray-50 transition-all" onclick="document.getElementById('fileRH').click()">
+                <i class="fa-solid fa-cloud-arrow-up text-3xl text-gold mb-2"></i>
+                <p class="text-xs font-bold text-gray-400 uppercase">Anexar Documento ou Atestado</p>
+                <input type="file" id="fileRH" class="hidden">
+            </div>
+            <textarea placeholder="Como o RH pode te ajudar hoje?" class="w-full p-5 bg-white rounded-3xl h-32 outline-none shadow-sm text-sm border-2 border-transparent focus:border-gold transition-all"></textarea>
+            <button onclick="alert('✅ Recebemos sua mensagem! Retornaremos em breve.')" class="w-full bg-ocean text-white font-bold py-5 rounded-3xl shadow-xl active:scale-95 transition-all">ENVIAR SOLICITAÇÃO</button>
+        </div>
+    </div>
+
+    <div id="screen-horas" class="screen">
+        <div class="bg-ocean p-6 text-white flex items-center rounded-b-3xl">
+            <button onclick="changeScreen('screen-home')" class="mr-4"><i class="fa-solid fa-chevron-left"></i></button>
+            <h2 class="font-bold uppercase text-sm tracking-widest">Histórico de Horas</h2>
+        </div>
+        <div class="p-8 text-center">
+            <div class="bg-white p-10 rounded-[45px] shadow-sm">
+                <p class="text-xs text-gray-400 font-bold mb-2 uppercase tracking-[3px]">Saldo Acumulado</p>
+                <h3 id="detalheHoras" class="text-6xl font-black text-blue-900">---</h3>
+                <div class="mt-8 pt-8 border-t border-gray-100 flex justify-around">
+                    <div><p class="text-[10px] text-gray-400 font-bold uppercase">Extras</p><p class="text-green-500 font-bold">+15:00</p></div>
+                    <div><p class="text-[10px] text-gray-400 font-bold uppercase">Faltas</p><p class="text-red-500 font-bold">-02:15</p></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="screen-contracheque" class="screen">
+        <div class="bg-ocean p-6 text-white flex items-center rounded-b-3xl"><button onclick="changeScreen('screen-home')" class="mr-4"><i class="fa-solid fa-chevron-left"></i></button><h2 class="font-bold uppercase text-sm">Financeiro</h2></div>
+        <div class="p-6">
+            <div class="bg-white p-8 rounded-[40px] shadow-sm text-center">
+                <div class="w-20 h-20 bg-red-50 text-red-500 rounded-full flex items-center justify-center mx-auto mb-4 text-3xl">
+                    <i class="fa-solid fa-file-pdf"></i>
+                </div>
+                <p class="font-bold text-gray-800">Contracheque Disponível</p>
+                <p class="text-[10px] text-gray-400 mb-6 uppercase">Referente a Fevereiro/2026</p>
+                <button onclick="alert('Iniciando download do PDF...')" class="bg-ocean text-white px-10 py-3 rounded-full font-bold shadow-lg active:scale-95 transition-all">BAIXAR PDF</button>
+            </div>
+        </div>
+    </div>
+
+    <nav id="navbar" class="hidden fixed bottom-0 w-full bg-white h-24 flex justify-around items-center tab-bar">
+        <button onclick="changeScreen('screen-home')" id="nav-home" class="nav-icon nav-active"><i class="fa-solid fa-house mb-1"></i><span class="text-[8px] font-bold">HOME</span></button>
+        <button onclick="changeScreen('screen-horas')" id="nav-horas" class="nav-icon"><i class="fa-solid fa-clock mb-1"></i><span class="text-[8px] font-bold">HORAS</span></button>
+        <button onclick="changeScreen('screen-solicitar')" class="bg-gold text-white w-14 h-14 rounded-full flex items-center justify-center text-xl btn-plus"><i class="fa-solid fa-camera"></i></button>
+        <button onclick="changeScreen('screen-cardapio')" id="nav-cardapio" class="nav-icon"><i class="fa-solid fa-utensils mb-1"></i><span class="text-[8px] font-bold">MENU</span></button>
+        <button onclick="changeScreen('screen-perfil')" id="nav-perfil" class="nav-icon"><i class="fa-solid fa-user-gear mb-1"></i><span class="text-[8px] font-bold">PERFIL</span></button>
     </nav>
 
     <script>
-        let user = JSON.parse(localStorage.getItem('ocean_user')) || { nome: "Carlos Daniel", horas: "+12:45", foto: "" };
+        // --- LOGICA DE DADOS E PERSISTENCIA ---
+        let usuarioAtivo = JSON.parse(localStorage.getItem('userSession')) || { 
+            cpf: "708.375.354-76", 
+            senha: "6664", 
+            nome: "Carlos Daniel", 
+            mat: "6664", 
+            setor: "ASSISTENTE ADM", 
+            horas: "+12:45",
+            foto: "" 
+        };
+
+        function mascaraCPF(input) {
+            let v = input.value.replace(/\D/g, "");
+            if (v.length > 3) v = v.replace(/^(\d{3})(\d)/, "$1.$2");
+            if (v.length > 6) v = v.replace(/^(\d{3})\.(\d{3})(\d)/, "$1.$2.$3");
+            if (v.length > 9) v = v.replace(/^(\d{3})\.(\d{3})\.(\d{3})(\d)/, "$1.$2.$3-$4");
+            input.value = v;
+        }
 
         function login() {
-            document.getElementById('navbar').classList.remove('hidden');
-            changeScreen('screen-home');
-            updateUI();
+            const u = document.getElementById('userInput').value;
+            const p = document.getElementById('passInput').value;
+            // No CodePen, simulamos o login usando o CPF e Senha definidos acima
+            if (u === "708.375.354-76" && p === "6664") {
+                atualizarInterface();
+                changeScreen('screen-home');
+            } else { alert("Acesso Negado! CPF ou Matrícula não conferem."); }
         }
 
-        function changeScreen(id) {
-            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-            document.getElementById(id).classList.add('active');
+        function atualizarInterface() {
+            document.getElementById('displayNome').innerText = usuarioAtivo.nome;
+            document.getElementById('displaySetor').innerText = `${usuarioAtivo.setor} • MAT: ${usuarioAtivo.mat}`;
+            document.getElementById('displayHoras').innerText = usuarioAtivo.horas;
+            document.getElementById('detalheHoras').innerText = usuarioAtivo.horas;
+            document.getElementById('displayHoras').style.color = usuarioAtivo.horas.startsWith('-') ? "#ef4444" : "#c5a059";
+            
+            document.getElementById('editNome').value = usuarioAtivo.nome;
+            document.getElementById('editSetor').value = usuarioAtivo.setor;
+
+            const imgUrl = usuarioAtivo.foto || `https://ui-avatars.com/api/?name=${usuarioAtivo.nome}&background=c5a059&color=fff`;
+            document.getElementById('home-avatar').src = imgUrl;
+            document.getElementById('perfil-avatar').src = imgUrl;
         }
 
-        function updateUI() {
-            document.getElementById('displayNome').innerText = user.nome;
-            document.getElementById('displayHoras').innerText = user.horas;
-            document.getElementById('editNome').value = user.nome;
-            const pic = user.foto || `https://ui-avatars.com/api/?name=${user.nome}&background=c5a059&color=fff`;
-            document.getElementById('home-avatar').src = pic;
-            document.getElementById('perfil-avatar').src = pic;
-        }
-
-        function updatePhoto(input) {
+        function alterarFoto(input) {
             if (input.files && input.files[0]) {
                 const reader = new FileReader();
-                reader.onload = e => { user.foto = e.target.result; updateUI(); };
+                reader.onload = e => {
+                    usuarioAtivo.foto = e.target.result;
+                    document.getElementById('perfil-avatar').src = e.target.result;
+                };
                 reader.readAsDataURL(input.files[0]);
             }
         }
 
-        function saveProfile() {
-            user.nome = document.getElementById('editNome').value;
-            localStorage.setItem('ocean_user', JSON.stringify(user));
-            updateUI();
-            alert("Salvo!");
+        function salvarPerfil() {
+            usuarioAtivo.nome = document.getElementById('editNome').value;
+            usuarioAtivo.setor = document.getElementById('editSetor').value;
+            localStorage.setItem('userSession', JSON.stringify(usuarioAtivo));
+            atualizarInterface();
+            alert("✅ Seus dados foram salvos!");
             changeScreen('screen-home');
         }
+
+        // --- CARDÁPIO ---
+        const cardapioSemanal = {
+            segunda: { manha: "Café, pão, manteiga, sucos de caju/goiaba", tarde: "Frango grelhado, arroz e feijão", noite: "Sopa de legumes" },
+            terca: { manha: "Cuscuz com ovos e leite", tarde: "Carne de sol e macaxeira", noite: "Canja de Galinha" },
+            quarta: { manha: "Tapioca com queijo coalho", tarde: "Peixe assado e purê", noite: "Macarronada" },
+            quinta: { manha: "Pão de queijo e frutas", tarde: "Massa com almôndegas", noite: "Caldo de feijão" },
+            sexta: { manha: "Bolo de rolo e café", tarde: "Feijoada Completa!", noite: "Sanduíches" },
+            sabado: { manha: "Ovos e suco natural", tarde: "Bife acebolado", noite: "Pizza de Frango" },
+            domingo: { manha: "Brunch Especial", tarde: "Assado de panela", noite: "Sopa leve" }
+        };
+
+        function renderCardapio(dia) {
+            const btnCont = document.getElementById('btn-container-dias');
+            btnCont.innerHTML = Object.keys(cardapioSemanal).map(d => 
+                `<button onclick="renderCardapio('${d}')" class="day-btn ${d===dia?'active-day':''}">${d.charAt(0).toUpperCase()+d.slice(1,2)}</button>`
+            ).join('');
+
+            const menu = cardapioSemanal[dia];
+            document.getElementById('conteudo-cardapio').innerHTML = `
+                <div class="relative pl-8 before:content-[''] before:absolute before:left-0 before:top-0 before:bottom-0 before:w-1 before:bg-yellow-400 before:rounded-full"><p class="text-[10px] font-black text-yellow-600 uppercase">Café da Manhã</p><p class="text-sm text-gray-700">${menu.manha}</p></div>
+                <div class="relative pl-8 before:content-[''] before:absolute before:left-0 before:top-0 before:bottom-0 before:w-1 before:bg-orange-500 before:rounded-full"><p class="text-[10px] font-black text-orange-600 uppercase">Almoço / Tarde</p><p class="text-sm text-gray-700">${menu.tarde}</p></div>
+                <div class="relative pl-8 before:content-[''] before:absolute before:left-0 before:top-0 before:bottom-0 before:w-1 before:bg-blue-900 before:rounded-full"><p class="text-[10px] font-black text-blue-900 uppercase">Jantar / Noite</p><p class="text-sm text-gray-700">${menu.noite}</p></div>
+            `;
+        }
+
+        // --- NAVEGAÇÃO ---
+        function changeScreen(id) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            const nav = document.getElementById('navbar');
+            id === 'screen-login' ? nav.classList.add('hidden') : nav.classList.remove('hidden');
+            
+            document.querySelectorAll('.nav-icon').forEach(b => b.classList.remove('nav-active'));
+            const navMap = { 'screen-home': 'nav-home', 'screen-horas': 'nav-horas', 'screen-cardapio': 'nav-cardapio', 'screen-perfil': 'nav-perfil' };
+            if(navMap[id]) document.getElementById(navMap[id]).classList.add('nav-active');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Inicialização
+        const hoje = ['domingo', 'segunda', 'terca', 'quarta', 'quinta', 'sexta', 'sabado'][new Date().getDay()];
+        renderCardapio(hoje);
+        atualizarInterface();
     </script>
 </body>
 </html>
